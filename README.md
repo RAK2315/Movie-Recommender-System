@@ -48,8 +48,8 @@ The app recommends 10 movies similar to the one selected by the user, and fetche
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/your-username/movie-recommender
-cd movie-recommender
+git clone https://github.com/your-username/Movie-Recommender-System
+cd Movie-Recommender-System
 ```
 
 2. **Install dependencies:**
