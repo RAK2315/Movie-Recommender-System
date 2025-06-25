@@ -44,29 +44,5 @@ The app recommends 10 movies similar to the one selected by the user, and fetche
 
 ---
 
-## 🖥️ How to Run
-
-1. **Clone the repository:**
-```bash
-git clone https://github.com/your-username/Movie-Recommender-System
-cd Movie-Recommender-System
-```
-
-2. **Install dependencies:**
-```bash
-# Install all required libraries (in cmd)
-pip install streamlit pandas scikit-learn
-
-```
-
-3. **Run the app:**
-```bash
-# Run this in cmd
-streamlit run app.py
-```
-
-4. **Use it:**
-- Select a movie from the dropdown
-- Click the **"Recommend"** button
-- View your recommended movies
+### Read Eplanation (how it works) file to understand the code
 
