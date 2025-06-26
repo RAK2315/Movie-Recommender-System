@@ -43,7 +43,7 @@ movies["tags"] = movies["overview"] + movies["genre"]
 ### 🔹 5. Convert Text to Vectors
 ```python
 from sklearn.feature_extraction.text import CountVectorizer
-cv = CountVectorizer(max_features=5000)
+cv = CountVectorizer(max_features=10000,stop_words="english")
 vectors = cv.fit_transform(movies["tags"]).toarray()
 ```
 - Converts the `tags` column (combined genre + overview) into numeric feature vectors.
@@ -85,7 +85,7 @@ pickle.dump(similarity, open("similarity.pkl", "wb"))
 ## 🌐 Code Explanation (`app.py`)
 
 This is the **Streamlit frontend app** that loads preprocessed data and serves the movie recommendation system through a web UI. Here's a step-by-step breakdown:
-
+Would be better if done in code editors like vs code
 
 ##
 ##
