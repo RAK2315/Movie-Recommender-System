@@ -44,5 +44,5 @@ The app recommends 10 movies similar to the one selected by the user, and fetche
 
 ---
 
-### Read Eplanation (how it works) file to understand the code
+### Read Documentation file to understand the code
 
