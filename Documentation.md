@@ -1,9 +1,4 @@
-
-# Explanation (How It Works)
-
-
----
-## 🧠 Code Explanation (Jupyter Notebook)
+## 🧠 Code Explanation (`Main.ipynb`)
 
 The logic for generating movie recommendations is developed in the `Main.ipynb` notebook. Below is a breakdown of what your code does — based purely on your actual code without any modifications:
 
@@ -48,11 +43,13 @@ movies["tags"] = movies["overview"] + movies["genre"]
 ### 🔹 5. Convert Text to Vectors
 ```python
 from sklearn.feature_extraction.text import CountVectorizer
-cv = CountVectorizer(max_features=5000)
+cv = CountVectorizer(max_features=10000,stop_words="english")
 vectors = cv.fit_transform(movies["tags"]).toarray()
 ```
-- Converts the `tags` into numeric vectors using `CountVectorizer`.
-- Each movie becomes a 5000-dimensional vector based on its word counts.
+- Converts the `tags` column (combined genre + overview) into numeric feature vectors.
+- `CountVectorizer` builds a vocabulary of the 5000 most frequent words.
+- Each movie becomes a vector where each dimension counts the number of times a word appears.
+- This step translates textual content into a **numerical form** that a machine can compare.
 
 ---
 
@@ -61,8 +58,10 @@ vectors = cv.fit_transform(movies["tags"]).toarray()
 from sklearn.metrics.pairwise import cosine_similarity
 similarity = cosine_similarity(vectors)
 ```
-- Computes pairwise cosine similarity between movie vectors.
-- A higher value means more similar content.
+- Calculates **how similar each movie is to every other movie**.
+- Cosine similarity measures the **angle between two movie vectors**.
+- A value of **1 means perfect match**, 0 means no similarity.
+- This results in a square matrix where `similarity[i][j]` represents how close movie i is to movie j.
 
 ---
 
@@ -72,8 +71,8 @@ import pickle
 pickle.dump(movies, open("movies_list.pkl", "wb"))
 pickle.dump(similarity, open("similarity.pkl", "wb"))
 ```
-- Saves the final DataFrame and similarity matrix into `.pkl` files.
-- These files are used by the `app.py` Streamlit frontend.
+- Saves the final DataFrame and similarity matrix into `.pkl` (pickle) files.
+- These files are loaded later in the `app.py` to serve recommendations.
 
 ---
 
@@ -83,13 +82,15 @@ pickle.dump(similarity, open("similarity.pkl", "wb"))
 
 
 
----
-
 ## 🌐 Code Explanation (`app.py`)
 
 This is the **Streamlit frontend app** that loads preprocessed data and serves the movie recommendation system through a web UI. Here's a step-by-step breakdown:
+Would be better if done in code editors like vs code
 
----
+##
+##
+
+
 
 ### 🔹 1. Import Required Libraries
 ```python
@@ -111,8 +112,8 @@ movies = pickle.load(f1)
 similarity = pickle.load(f2)
 movies_list = movies["title"].values
 ```
-- Loads the movie metadata and cosine similarity matrix.
-- Extracts all movie titles into a list for the dropdown.
+- Loads the `.pkl` files created earlier.
+- Extracts the list of all movie titles into `movies_list` for the dropdown menu.
 
 ---
 
@@ -121,7 +122,7 @@ movies_list = movies["title"].values
 st.header("Movie Recommendation System")
 select_value = st.selectbox("Select Movie", movies_list)
 ```
-- Displays a main heading and dropdown menu with movie titles.
+- Adds a header and dropdown to let users pick a movie.
 
 ---
 
@@ -141,9 +142,12 @@ def fetch_poster(movie_id):
         print(f"⚠️ Poster fetch failed for ID {movie_id} → {e}")
         return "https://via.placeholder.com/300x450?text=Error"
 ```
-- Uses TMDB API to fetch poster image for a given movie ID.
-- Returns a placeholder if poster is missing or the request fails.
-- NOTE: Generate your own api key from tmdb api and enter it in the code above
+- Makes an API request to **TMDB** using the movie's `id`.
+- If a valid `poster_path` is found, constructs a full poster URL.
+- If not, returns a placeholder poster.
+- This ensures the app doesn't break even if posters are missing or the API call fails.
+
+> 🛠 Make sure to **generate your own TMDB API key** and paste it where indicated.
 
 ---
 
@@ -163,9 +167,14 @@ def recommend(movie1):
     
     return rec_mov, rec_poster
 ```
-- Finds the index of the selected movie.
-- Gets the 10 most similar movies from the similarity matrix.
-- Collects their titles and poster URLs.
+- This function finds **10 most similar movies** to the selected one:
+  - `similarity[index]` gives similarity scores of all movies with the selected movie.
+  - `enumerate()` attaches indices to those scores.
+  - `sorted(..., reverse=True)` ranks movies from most to least similar.
+  - `distance[1:11]`: skips the first one (it's the same movie) and takes the next 10.
+- It returns two lists:
+  - `rec_mov`: Titles of recommended movies
+  - `rec_poster`: Their poster image URLs
 
 ---
 
@@ -186,14 +195,12 @@ if st.button("Recommend"):
             st.text(movie_name[i])
             st.image(movie_poster[i])
 ```
-- On clicking the **Recommend** button:
-  - Calls the `recommend()` function.
-  - Displays the 10 recommended movies and their posters in two rows (5 per row).
+- When the "Recommend" button is clicked:
+  - It runs the `recommend()` function.
+  - Displays 10 recommendations with posters in **two rows of 5 columns each** using `st.columns`.
 
 ---
 
 > ✅ This script must be run **after** generating the `.pkl` files using `Main.ipynb`.
 
-> NOTE: TMDB poster links have been broken for a while now so there is a good chance alot of the posters won't loan their poster images, this is a problem on thier hand not in the code.
-
-
+> 🔴 **Note:** TMDB's API occasionally breaks or returns null posters. That’s not an error in your code — it's a server-side or data issue from TMDB.
